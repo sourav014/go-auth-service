@@ -1,18 +1,33 @@
-package controller
+package middleware
 
 import (
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sourav014/go-auth-service/initializers"
-	"github.com/sourav014/go-auth-service/models"
+	"github.com/go-playground/validator/v10"
+	"github.com/sourav014/go-auth-service/repository"
 	JwtToken "github.com/sourav014/go-auth-service/token"
 )
 
-func CheckUserAuthentication(ctx *gin.Context) {
+type AuthMiddlewareImpl struct {
+	SessionsRepository repository.SessionsRepository
+	UsersReposity      repository.UsersRepository
+	JWTMaker           *JwtToken.JWTMaker
+	Validate           *validator.Validate
+}
+
+func NewAuthMiddlewareImpl(sessionRepository repository.SessionsRepository, userRepository repository.UsersRepository, jwtMaker *JwtToken.JWTMaker, validate *validator.Validate) AuthMiddleware {
+	return &AuthMiddlewareImpl{
+		SessionsRepository: sessionRepository,
+		UsersReposity:      userRepository,
+		JWTMaker:           jwtMaker,
+		Validate:           validate,
+	}
+}
+
+func (auth *AuthMiddlewareImpl) CheckUserAuthentication(ctx *gin.Context) {
 	authHeader := ctx.GetHeader("Authorization")
 
 	if authHeader == "" {
@@ -27,9 +42,8 @@ func CheckUserAuthentication(ctx *gin.Context) {
 	}
 
 	tokenString := authToken[1]
-	jwtMaker := JwtToken.NewJWTMaker(os.Getenv("SECRET_KEY"))
 
-	userClaims, err := jwtMaker.VerifyToken(tokenString)
+	userClaims, err := auth.JWTMaker.VerifyToken(tokenString)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
 		return
@@ -40,10 +54,8 @@ func CheckUserAuthentication(ctx *gin.Context) {
 		return
 	}
 
-	var user models.User
-	initializers.DB.Where("ID=?", userClaims.ID).Find(&user)
-
-	if user.ID == 0 {
+	user, err := auth.UsersReposity.FindById(userClaims.ID)
+	if err != nil || user.ID == 0 {
 		ctx.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}

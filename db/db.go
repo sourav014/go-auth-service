@@ -10,7 +10,7 @@ import (
 )
 
 type Database struct {
-	db *gorm.DB
+	Db *gorm.DB
 }
 
 func NewDatabase() (*Database, error) {
@@ -26,10 +26,10 @@ func NewDatabase() (*Database, error) {
 	}
 
 	return &Database{
-		db: db,
+		Db: db,
 	}, nil
 }
 
 func (d *Database) GetDB() *gorm.DB {
-	return d.db
+	return d.Db
 }
