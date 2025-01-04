@@ -1,0 +1,29 @@
+version: '2.29.7'
+
+services:
+  go-auth-service:
+    container_name: go-auth-service
+    image: souravprasadas/go-auth-service:1.0.0
+    environment:
+      - DB_URL=host=postgres user=postgres password=databasepasswd dbname=auth_service port=5432 sslmode=disable TimeZone=Asia/Kolkata
+      - SECRET_KEY=jdfksaklKAFKSK
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: postgresql
+    image: postgres:14
+    environment:
+      - POSTGRES_PASSWORD=databasepasswd
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=auth_service
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/migrations:/migrations
+
+volumes:
+  pgdata: {}
