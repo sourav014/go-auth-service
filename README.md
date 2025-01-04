@@ -43,11 +43,9 @@ curl --location 'http://127.0.0.1:8080/api/v1/auth/register' \
 
 ## Response
 {
-    "user": {
-        "name": "TestUser",
-        "email": "test.user@gmail.com",
-        "is_admin": true
-    }
+    "name": "TestUser",
+    "email": "test.user@gmail.com",
+    "is_admin": false
 }
 
 ```
@@ -104,15 +102,13 @@ curl --location 'http://127.0.0.1:8080/api/v1/auth/renew' \
 
 curl --location 'http://127.0.0.1:8080/api/v1/user/profile' \
 --header 'Content-Type: application/json' \
---header 'Authorization: Bearer {please use the access_token received from login api response to get the user profie.}' \
+--header 'Authorization: Bearer {please use the access_token received from login api response to get the user profie.}'
 
 ## Response
 {
-    "user": {
-        "name": "TestUser",
-        "email": "test.user@gmail.com",
-        "is_admin": true
-    }
+    "name": "TestUser",
+    "email": "test.user@gmail.com",
+    "is_admin": false
 }
 
 ```
