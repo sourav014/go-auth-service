@@ -29,8 +29,9 @@ func (authController *AuthController) RegisterUser(ctx *gin.Context) {
 	registerUserResponse, err := authController.authService.RegisterUser(registerUserRequest)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"error": err.Error(),
 		})
+		return
 	}
 
 	ctx.JSON(http.StatusCreated, registerUserResponse)
@@ -48,8 +49,9 @@ func (authController *AuthController) LoginUser(ctx *gin.Context) {
 	loginUserResponse, err := authController.authService.LoginUser(loginUserRequest)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"error": err.Error(),
 		})
+		return
 	}
 
 	ctx.JSON(http.StatusOK, loginUserResponse)
@@ -67,8 +69,9 @@ func (authController *AuthController) RenewAccessToken(ctx *gin.Context) {
 	renewAccessTokenResponse, err := authController.authService.RenewAccessToken(renewAccessTokenRequest)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"error": err.Error(),
 		})
+		return
 	}
 
 	ctx.JSON(http.StatusOK, renewAccessTokenResponse)
@@ -81,8 +84,9 @@ func (authController *AuthController) RevokeToken(ctx *gin.Context) {
 	err := authController.authService.RevokeToken(sessionId)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"error": err.Error(),
 		})
+		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
